@@ -27,7 +27,7 @@ class Oauth_Controller_Action_Helper_FactoryLocator extends Zend_Controller_Acti
     
     
     /**
-     * Returns the correct abstract factory to create a Token
+     * Returns the correct abstract factory to create an Authorization Code
      * 
      * @return Oauth_Builder_AuthorizationCode
      */

@@ -67,7 +67,7 @@ class Oauth_AuthorizeController extends Zend_Controller_Action {
     /**
      * Receives data from the authorization form.
      * Validates the incoming form request and, if valid, checks the resource
-     * owner choose. Then route the request to two helper functions, namely:
+     * owner choice. Then route the request to two helper functions, namely:
      * 
      * - processApprove()
      * - processDeny()
@@ -102,7 +102,7 @@ class Oauth_AuthorizeController extends Zend_Controller_Action {
             $this->processApprove($form->getValues());
         } else if ($form->getValue("no")) {//Resource Owner says no
             $this->processDeny($form->getValues());
-        } else {//unreckognized value
+        } else {//unrecognized value
             $this->view->message = 'process-authorize';
             $this->view->form = $form;
             return $this->render('index'); // re-render the login form
@@ -133,7 +133,7 @@ class Oauth_AuthorizeController extends Zend_Controller_Action {
             $url = $urlHelper->tokenRedirect($data[REDIRECT_URI], $token, $state);
         }
 
-
+	Zend_Auth::getInstance()->clearIdentity();
         $this->_helper->redirector->gotoUrl($url);
     }
 
@@ -147,7 +147,7 @@ class Oauth_AuthorizeController extends Zend_Controller_Action {
         $urlHelper = $this->_helper->RedirectUriFormatter;
 
         $url = $urlHelper->errorRedirect($data[REDIRECT_URI], $state);
-
+	Zend_Auth::getInstance()->clearIdentity();
         $this->_helper->redirector->gotoUrl($url);
     }
 
@@ -157,10 +157,14 @@ class Oauth_AuthorizeController extends Zend_Controller_Action {
      * @return Oauth_Form_ApproveForm 
      */
     protected function getForm() {
-
+    /*$action = '/v2/oauth/authorize/process';*/
+    	$action = $this->view->url(array('module' => 'oauth',
+					'controller' => 'authorize',
+					'action'     => 'process'), 'Oauth_module_route');
+					
         //create a new OAuth Approve Form
         $form = new Oauth_Form_ApproveForm(array(
-                    'action' => '/v2/oauth/authorize/process',
+                    'action' => $action /*'/v2/oauth/authorize/process'*/,
                     'method' => 'post',
                 ));
 

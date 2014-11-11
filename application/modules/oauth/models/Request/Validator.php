@@ -91,20 +91,22 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
 
         
         
-        $reponseType = $request->getResponseType();
+        $responseType = $request->getResponseType();
 
         //////////////////////////////////////
         ///////DATABASE AGNOSTIC CHECKS///////
         //////////////////////////////////////        
+
         /////GENERIC CHECKS
+
         //search for the response type parameter. If not present, ERROR!!!
-        if (!$reponseType) {
+        if (!$responseType) {
             $this->_error(self::MISSING_RESPONSE_TYPE);
             return FALSE;
         }
 
         //check for the response type and for the client parameters
-        switch ($reponseType) {
+        switch ($responseType) {
             case RESPONSE_TYPE_CODE:
             case RESPONSE_TYPE_TOKEN:
                 if (!$client_id = $request->getClientId()) {
@@ -118,37 +120,33 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
         }
 
         /////SERVER SPECIFIC CHECKS
-
         
         if (!$redirect_uri = $request->getRedirectUri()) {
             $this->_error(self::MISSING_REDIRECT_URI);
             return FALSE;
         }
         
-        
         //////////////////////////////////////
         ///////DATABASE AWARE CHECKS//////////
         //////////////////////////////////////
-        /////SERVER SPECIFIC CHECKS
-        //Check our scopes
 
+        /////SERVER SPECIFIC CHECKS
+
+        //Check scopes
         if (!$this->validateScopes($request)) {
             return FALSE;
         }
-        
-
-
 
         //Check client
+
         $clientMapper = new Oauth_Mapper_Client();
 
-        
         if (!$requesting_client = $clientMapper->find($client_id)) {
             $this->_error(self::WRONG_CLIENT_ID);
             return FALSE;
         }
 
-        if (!$requesting_client->isAuthorized($reponseType)) {
+        if (!$requesting_client->isAuthorized($responseType)) {
             $this->_error(self::WRONG_CLIENT_TYPE);
             return FALSE;
         }

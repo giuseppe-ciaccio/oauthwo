@@ -16,7 +16,7 @@
 class Oauth_Model_AuthorizationCode {
 
     /**
-     * The code of this auth code object, i.e. what is send to the client
+     * The code of this auth code object, i.e. what is sent to the client
      *
      * @var string
      */
@@ -61,7 +61,7 @@ class Oauth_Model_AuthorizationCode {
 
     
     /**
-     * Returns the this code's code
+     * Returns this code's code
      *
      * @return string 
      */

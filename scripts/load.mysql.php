@@ -30,11 +30,14 @@ require_once 'Zend/Loader/Autoloader.php';
 Zend_Loader_Autoloader::getInstance();
 
 // Define some CLI options
+// Define some CLI options
 $getopt = new Zend_Console_Getopt(array(
-            'withdata|w' => 'Load database with sample data',
-            'env|e-s' => 'Application environment for which to create database (defaults to development)',
-            'help|h' => 'Help -- usage message',
-        ));
+		'dbschema|s-s'  =>  'Loads the database schema from file provided',
+		'dbdata|d-s'    =>  'Loads the default data from the file provided',
+		'withdata|w'    =>  'Load database with sample data',
+		'env|e-s'       =>  'Application environment for which to create '.
+		                    'database (defaults to development)',
+		'help|h'        =>  'Help -- usage message'));
 try {
     $getopt->parse();
 } catch (Zend_Console_Getopt_Exception $e) {
@@ -51,66 +54,55 @@ if ($getopt->getOption('h')) {
 
 // Initialize values based on presence or absence of CLI options
 $withData = $getopt->getOption('w');
-$env = $getopt->getOption('e');
+$env      = $getopt->getOption('e');
+$db_schema_file = $getopt->getOption('s');
+$db_data_file = $getopt->getOption('d');
+
 defined('APPLICATION_ENV')
         || define('APPLICATION_ENV', (null === $env) ? 'development' : $env);
 
 // Initialize Zend_Application
-$application = new Zend_Application(
-                APPLICATION_ENV,
-                APPLICATION_PATH . '/configs/application.ini'
-);
+try {
+	$application = new Zend_Application(APPLICATION_ENV, 
+										APPLICATION_PATH.'/configs/application.ini');
+} catch (Zend_Config_Exception $e) {
+	echo 'The application environment is invalid "'.$env.'"'.PHP_EOL;
+	return false;
+}
 
 // Initialize and retrieve DB resource
 $bootstrap = $application->getBootstrap();
 $bootstrap->bootstrap('db');
 $dbAdapter = $bootstrap->getResource('db');
 
-// let the user know whats going on (we are actually creating a
-// database here)
-if ('testing' != APPLICATION_ENV) {
-    echo 'Writing Database in (control-c to cancel): ' . PHP_EOL;
-    for ($x = 5; $x > 0; $x--) {
-        echo $x . "\r";
-        sleep(1);
-    }
+
+echo 'Writing Authorization Database in (control-c to cancel): ' . PHP_EOL;
+for ($x = 5; $x > 0; $x--) {
+    echo $x . "\r";
+    sleep(1);
 }
 
-// Check to see if we have a database file already
-$options = $bootstrap->getOption('resources');
-$dbFile = $options['db']['params']['dbname'];
-if (file_exists($dbFile)) {
-    unlink($dbFile);
-}
-
-// this block executes the actual statements that were loaded from
-// the schema file.
 try {
-    $schemaSql = file_get_contents(dirname(__FILE__) . '/schema.mysql.sql');
-    // use the connection directly to load sql in batches
-    $dbAdapter->getConnection()->exec($schemaSql);
-    //chmod($dbFile, 0666);
+	$schemaSql = file_get_contents($db_schema_file);
+	if (!$schemaSql)
+		throw new Exception("The db schema file cannot be readed.");
+	if ($dbAdapter->getConnection()->exec($schemaSql))
+		throw new Exception("The db schema contains invalid queries");	
+	
+	echo PHP_EOL.'Database Created.'.PHP_EOL;
 
-    if ('testing' != APPLICATION_ENV) {
-        echo PHP_EOL;
-        echo 'Database Created';
-        echo PHP_EOL;
-    }
-
-    if ($withData) {
-        $dataSql = file_get_contents(dirname(__FILE__) . '/data.mysql.sql');
-        // use the connection directly to load sql in batches
-        $dbAdapter->getConnection()->exec($dataSql);
-        if ('testing' != APPLICATION_ENV) {
-            echo 'Data Loaded.';
-            echo PHP_EOL;
-        }
-    }
+	if ($withData) {
+		$dataSql = file_get_contents($db_data_file);
+		if (!$dataSql)
+			throw new Exception("The db data file cannot be readed.");
+		if ($dbAdapter->getConnection()->exec($dataSql))
+			throw new Exception("The db data file contains invalid queries");
+		echo 'Data Loaded.'.PHP_EOL;
+	}
 } catch (Exception $e) {
-    echo 'AN ERROR HAS OCCURED:' . PHP_EOL;
-    echo $e->getMessage() . PHP_EOL;
-    return false;
+	echo 'An error has occured:' . PHP_EOL;
+	echo $e->getMessage() . PHP_EOL;
+	return false;
 }
 
-// generally speaking, this script will be run from the command line
 return true;

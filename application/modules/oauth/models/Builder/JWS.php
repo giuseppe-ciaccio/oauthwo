@@ -68,19 +68,25 @@ class Oauth_Builder_JWS extends Oauth_Builder_JWT{
      * @return string
      */
     private function sign($secured_input){
-        //our future signature
         $signature = NULL;
-        //our key location & signing algorithm
+
+        //signing algorithm
         $algo = "sha256";
-        //let's read the key
+
+        //obtain key from location
         $fp = fopen($this->key, "r");
+	// TODO: Should the key file be not accessible,
+	// the function silently returns an empty signature
+	// and the resulting token will be ill-formed and rejected by RS.
+	// Caller must do sanity checks,
+	// or this function should throw an exception and caller should catch.
         $priv_key = fread($fp, 8192);
         fclose($fp);
         $pkeyid = openssl_get_privatekey($priv_key);
-        //let's sign the secured input using openssl_sign
-        openssl_sign($secured_input, $signature, $pkeyid, $algo);                
+
+        openssl_sign($secured_input, $signature, $pkeyid, $algo);
+
         openssl_free_key($pkeyid); 
-        //return the base64 encoding of the signature.
         return $this->get_base64_encode($signature);
     }
     

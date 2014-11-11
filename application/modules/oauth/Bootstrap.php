@@ -106,8 +106,9 @@ define('CLIENT_TYPE_NATIVE', 'native');
 
 
 
-//to be put in some config file
-define('PRIVATE_SIGN_KEY_LOCATION', '/var/www/oauthwo_zend/docs/key.pem');
+//TODO put these in some config file
+//TODO the private key should be stored elsewhere, not into the app
+define('PRIVATE_SIGN_KEY_LOCATION', APPLICATION_PATH.'/../keys/key.pem');
 
 define('ACCESS_TOKEN_VALIDITY', 600000); //in seconds
 
@@ -124,7 +125,7 @@ class Oauth_Bootstrap extends Zend_Application_Module_Bootstrap {
 
     /**
      * Modify the standard routing to enable a fixed URL prefix indicating
-     * the OAuth framework version(V2) and a separated authorization/token 
+     * the OAuth framework version(V2) and separated authorization/token 
      * endpoints 
      */
     public function _initOauthRouting() {
