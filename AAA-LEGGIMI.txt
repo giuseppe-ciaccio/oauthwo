@@ -1,0 +1,13 @@
+AS = authorization server (Oauthwo)
+RS = resource server
+
+L'AS conosce gli endpoint dei RS
+(tabella "resource_server" nel dump oauthwo/scripts/data.mysql.sql),
+gli scope o "resource set" di ciascun RS (tabella "scope"),
+il nome logico con il quale esso e' noto presso i RS
+(oauthwo/models/Builder/Token.php -- sarebbe meglio che fosse in una tabella,
+e non nel sorgente),
+le applicazioni client accreditate e le rispettive credenziali
+(tabella "client"),
+gli utenti registrati (tabella "user")
+e gli id. di ciascun utente presso ciascun RS (tabella "user_reference").
