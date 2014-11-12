@@ -1,0 +1,7 @@
+In /etc/httpd, inserire un symlink php.ini che punti a php.ini-development,
+eventualmente rinominando il php.ini originale in php.ini-production.
+Cio' serve ad abilitare la visualizzazione degli errori.
+
+In entrambi i file php.ini, settare
+date.timezone = 'Europe/Rome' (o altro fuso orario)
+per evitare alcuni warning.

@@ -1,0 +1,15 @@
+Scaricare il tar.gz di Zend e aprirlo ovunque sembri opportuno.
+Io l'ho aperto in /usr/local e dunque e' stata creata la cartella
+/usr/local/ZendFramework-1.12.6/ contenente il tutto.
+
+La variabile include_path di PHP ha un valore di default
+che dipende dalla specifica installazione
+(puntare il browser al solito test.php e vedere li'...).
+Da me e' /usr/lib/php  .
+Per rendere visibile la libreria Zend e le estensioni ZendX
+all'interprete PHP senza alterare la variabile include_path in php_ini,
+ho fatto cosi':
+
+cd /usr/lib/php
+ln -s /usr/local/ZendFramework-1.12.6/library/Zend Zend
+ln -s /usr/local/ZendFramework-1.12.6/extras/library/ZendX ZendX

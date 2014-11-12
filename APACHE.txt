@@ -1,0 +1,60 @@
+In /etc/httpd.conf, scommentare (o inserire se assenti):
+
+LoadModule rewrite_module lib/httpd/modules/mod_rewrite.so
+(per consentire che le regole dentro i file .htaccess vengano considerate)
+
+LoadModule dir_module lib/httpd/modules/mod_dir.so
+(per consentire l'uso delle clausole <Directory>)
+
+LoadModule ssl_module lib/httpd/modules/mod_ssl.so
+LoadModule socache_shmcb_module lib/httpd/modules/mod_socache_shmcb.so
+(per abilitare https/ssl)
+
+Include /etc/httpd/mod_php.conf
+(per abilitare PHP)
+
+In Slackware, il file httpd.conf e' in realta' sotto /etc/httpd/
+ed e' organizzato come una serie di "include" che fanno riferimento
+ad altri file di configurazione, posti sotto /etc/httpd/extra;
+tali file raggruppano insiemi omogenei di direttive.
+Le direttive per https sono in /etc/httpd/extra/httpd-ssl.conf .
+Per abilitare https occorre dunque scommentare, in httpd.conf,
+la riga seguente:
+Include /etc/httpd/extra/httpd-ssl.conf
+
+Per consentire che, accedendo a una directory, venga restituito
+index.html oppure anche index.php, occorre la seguente direttiva:
+DirectoryIndex index.html index.php
+(di default c'e' solo "DirectoryIndex index.html").
+
+Occorre poi creare un <VirtualHost *:443> che eroghi l'applicazione,
+indicando come <Directory> la dir. public dell'applicazione client.
+
+Esempio generico di virtual host:
+
+<VirtualHost *:443>
+
+DocumentRoot "/var/www/ssl-htdocs"
+<Directory "/var/www/ssl-htdocs">
+    AllowOverride all
+    Options Indexes FollowSymLinks
+    Require all granted
+</Directory>
+ServerName localhost
+ServerAdmin giuseppe.ciaccio@unige.it
+ErrorLog "/var/log/httpd/localhost_error_log"
+TransferLog "/var/log/httpd/localhost_access_log"
+SSLEngine on
+SSLCertificateFile "/etc/httpd/certif/localhost.crt"
+SSLCertificateKeyFile "/etc/httpd/certif/localhost.key"
+
+</VirtualHost>
+
+Come si vede anche nell'esempio di prima, in ogni clausola <Directory>
+e' necessario avere le seguenti opzioni:
+
+AllowOverride All
+(per consentire che le regole dentro i file .htaccess vengano considerate)
+
+Options Indexes FollowSymLinks
+(per consentire i link simbolici)

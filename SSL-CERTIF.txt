@@ -1,0 +1,39 @@
+Per creare e installare un certificato self-signed per un host virtuale https:
+
+openssl req -x509 -new -nodes -days 3650 -out <nomehost>.crt -keyout <nomehost>.key
+
+dove, per comodita', <nomehost> puo' essere il nome breve dell'host.
+
+Durante la creazione del certificato viene chiesto il nome dell'host;
+fornire il nome completo.
+
+I due file prodotti devono poi essere messi p.es. in /etc/httpd
+e devono avere root come owner.  Uno dei due e' la chiave privata
+e deve avere permessi 600.
+
+L'host virtuale deve essere creato in /etc/httpd/httpd.conf
+(oppure in altro file, es. /etc/httpd/extra/httpd-ssl.conf,
+purche' /etc/httpd/httpd.conf lo includa per riferimento)
+usando i nomi dei certificati prodotti e il nome completo
+dell'host cosi' come indicato alla creazione del certificato.
+
+
+
+
+
+
+Qui sotto una procedura di creazione certificato diversa, che ho trovato
+su internet e che non ho sperimentato:
+
+#creare file di config cert-gen.config,
+#per evitare di rispondere a troppe domande.
+
+#openssl req -x509 -config cert-gen.config -newkey rsa:2048 -nodes -keyform PEM -days 3650 -extensions certauth -outform PEM -out ca.cer -keyout ca.key
+
+#openssl genrsa -out dione.key 2048
+
+#openssl req -config cert-gen.config -new -key dione.key -out dione.req
+
+#openssl x509 -req -in dione.req -CA ca.cer -CAkey ca.key -set_serial 100 -extfile cert-gen.config -extensions server -days 3650 -outform PEM -out dione.cer
+
+#rm dione.req

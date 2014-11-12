@@ -1,0 +1,19 @@
+Accertarsi che mysqld venga attivato dagli script di boot.
+
+La primissima volta che viene attivato occorre eseguire una specie di setup:
+mysql_install_db --user=mysql
+
+poi stabilire la password dell'utente root del DB (che non e' il root del
+S.O.):
+mysqladmin -u root password random85
+(per poi cambiarla, se occorre: mysqladmin -u root -p oldpassword newpassword)
+NOTA BENE la password "random85" ricorre negli script di configurazione
+oauth/scripts/set_up.sh
+client/scripts/set_up.sh
+comune/scripts/set_up.sh
+agenziaentrate/scripts/set_up.sh
+agenziaterritorio/scripts/set_up.sh
+che hanno lo scopo di creare e popolare i vari DB d'esempio
+(tali script sono richiamati dallo script set_up.sh nella dir. principale).
+Dunque, se si sceglie una password diversa, occorre modificarla anche negli
+script.
