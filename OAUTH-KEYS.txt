@@ -1,0 +1,9 @@
+The Oauthwo private signing key, by which the AS signs the issued tokens,
+is oauthwo/keys/key.pem
+That file name is defined in oauthwo/application/modules/oauth/Bootstrap.php
+(that should be instead defined in some config file or table, not in the
+program).
+
+IMPORTANT NOTICE:
+The key must be made readable by the PHP interpreter exclusively
+("chown apache:apache key.pem && chmod 600 key.pem")
