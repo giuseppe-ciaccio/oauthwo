@@ -6,4 +6,6 @@ program).
 
 IMPORTANT NOTICE:
 The key must be made readable by the PHP interpreter exclusively
-("chown apache:apache key.pem && chmod 600 key.pem")
+("chown apache:apache key.pem && chmod 400 key.pem").
+The script set_up.sh will do that; run it as root, after placing
+the oauthwo software under /var/www/<somewhere>
