@@ -1,0 +1,17 @@
+<h1>Results of the search</h1>
+
+<ol>
+
+<?php foreach($this->resu as $r){
+
+	echo "<li>Nome del Dataset: " . $r['rset_name'] . "; </br>
+	Descrizione " . $r['rset_description'] . "; </br> 
+	URI: <a href='" . $r['rset_uri'] . "'>" . $r['rset_uri'] . "</a></br> 
+	Tipo: <a href='" . $r['rset_type'] . "'>" . $r['rset_type'] . "</a></br>  
+	relevance " . $r['relevance'] . "</li>";
+}
+
+echo "</ol>" ?>
+
+
+
