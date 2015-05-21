@@ -72,7 +72,7 @@ class Oauth_Builder_JWE extends Oauth_Builder_JWT {
      * @param string $shared_key 
      */
     public function set_key($shared_key){        
-        $this->key=$shared_key;
+        $this->key = $shared_key;
     }
     
     /**
@@ -83,12 +83,19 @@ class Oauth_Builder_JWE extends Oauth_Builder_JWT {
      */
     public function get_token($plaintext) {
 
+        // "iv" stands for "initialization vector"
+
         $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC);
         $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
                         
         $this->set_header('iv', base64_encode($iv));
 
+// TODO: eseguire padding casuale del plaintext fino a raggiungere una
+// lunghezza multipla della dimensione di blocco (256), onde evitare
+// il padding automatico con zeri che e' attaccabile.
+// Ovviamente RS dovra' poi togliere il padding dopo la decifratura.
         $crypttext = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->key, $plaintext, MCRYPT_MODE_CBC, $iv);
+        if (!$crypttext) return FALSE;
         
         $enc_crypttext = $this->get_base64_encode($crypttext);
         
@@ -98,6 +105,5 @@ class Oauth_Builder_JWE extends Oauth_Builder_JWT {
         
         return sprintf("%s.%s.%s",$enc_header,$enc_encrypted_key,$enc_crypttext);
     }
-    
 
 }

@@ -1,0 +1,9 @@
+TODO endpoint per registrare RS presso AS (al momento e' in
+fase di realizzazione un endpoint per registrare resource set ma non per
+registrare RS, e gli RS sono scritti a mano in una tabella sql di AS).
+
+TODO endpoint per registrare client presso AS (al momento scritti a mano
+in una tabella sql di AS)
+
+TODO endpoint per registrare utenti presso AS (al momento scritti a mano
+in una tabella sql di AS)

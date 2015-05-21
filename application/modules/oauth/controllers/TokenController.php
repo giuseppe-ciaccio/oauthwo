@@ -1,12 +1,12 @@
 <?php
 
 /**
- * 
- * TokenController.php, 
- * 
+ *
+ * TokenController.php,
+ *
  * @author Antonio Pastorino <antonio.pastorino@gmail.com>
  * @version 0.1
- * 
+ *
  */
 
 /**
@@ -44,14 +44,15 @@ class Oauth_TokenController extends Zend_Controller_Action {
     public function init() {
 
         $this->_request_validator = new Oauth_Request_Validator();
-        
         $this->_helper->viewRenderer->setNoRender(true);
         $this->_helper->layout()->disableLayout();
         //inject the factory dependencies
         $factoryLocator = $this->_helper->FactoryLocator;
-        $this->_code_factory = $factoryLocator->getAuthorizationCodeFactory();
-        $this->_token_factory = $factoryLocator->getTokenFactory();
-        $this->_refresh_token_factory = $factoryLocator->getRefreshTokenFactory();
+
+       	$this->_code_factory = $factoryLocator->getAuthorizationCodeFactory();
+	$this->_token_factory = $factoryLocator->getTokenFactory();
+	$this->_refresh_token_factory = $factoryLocator->getRefreshTokenFactory();
+
     }
 
     public function indexAction() {
@@ -80,7 +81,6 @@ class Oauth_TokenController extends Zend_Controller_Action {
                 break;
         }
 
-
         $this->getResponse()->setBody($response);
     }
 
@@ -88,34 +88,37 @@ class Oauth_TokenController extends Zend_Controller_Action {
      * Process a request with authorization code grant type
      *
      * @param Oauth_Model_Request $request
-     * @return string the request to be outputted
+     * @return string the response
      */
     public function processGrantTypeAuthorizationCode(Oauth_Model_Request $request) {
 
         $modelLoader = $this->_helper->ModelLoader;
-        //client        
+        //client
         $client = $this->retrieveClientFromHeader($request);
         //code
         $code_val = $request->getCode();
-        $code = $this->_code_factory->consume($code_val);
-        //resource owner
-        $resource_owner_id = $code->getResourceOwnerId();
-        $resource_owner = $modelLoader->loadResourceOwner($resource_owner_id);
-        //scopes
-        $scopes = $code->getScopes();
-        //token
-        $token = $this->_token_factory->create($resource_owner, $scopes);
-        //refresh token
-        $refresh_token = $this->_refresh_token_factory->create($client, $scopes, $resource_owner);
-        //response
-        return $this->compose_response($token, $refresh_token);
+
+	$code = $this->_code_factory->consume($code_val);
+
+	//resource owner
+	$resource_owner_id = $code->getResourceOwnerId();
+	$resource_owner = $modelLoader->loadResourceOwner($resource_owner_id);
+	//scopes
+	$scopes = $code->getScopes();
+	//token
+	$token = $this->_token_factory->create($resource_owner, $scopes);
+	//refresh token
+	$refresh_token = $this->_refresh_token_factory->create($client, $scopes, $resource_owner);
+	//response
+	return $this->compose_response($token, $refresh_token);
+
     }
 
     /**
      * Process a request with password grant type
      *
      * @param Oauth_Model_Request $request
-     * @return string the request to be outputted
+     * @return string the response
      */
     protected function processGrantTypePassword(Oauth_Model_Request $request) {
 
@@ -127,19 +130,21 @@ class Oauth_TokenController extends Zend_Controller_Action {
         $resource_owner = $modelLoader->loadResourceOwner($resource_owner_id);
         //scopes
         $scopes = $request->getScope();
-        //token
-        $token = $this->_token_factory->create($resource_owner, $scopes);
-        //refresh token
-        $refresh_token = $this->_refresh_token_factory->create($client, $scopes, $resource_owner);
-        //response
-        return $this->compose_response($token, $refresh_token);
+
+	//token
+	$token = $this->_token_factory->create($resource_owner, $scopes);
+	//refresh token
+	$refresh_token = $this->_refresh_token_factory->create($client, $scopes, $resource_owner);
+	//response
+      	return $this->compose_response($token, $refresh_token);
+
     }
 
     /**
      * Process a request with refresh token grant type
      *
      * @param Oauth_Model_Request $request
-     * @return string the request to be outputted
+     * @return string the response
      */
     protected function processGrantTypeRefreshToken(Oauth_Model_Request $request) {
 
@@ -147,39 +152,41 @@ class Oauth_TokenController extends Zend_Controller_Action {
         $client = $this->retrieveClientFromHeader($request);
 
         $code_val = $request->getRefreshToken();
-        $code = $this->_refresh_token_factory->consume($code_val);
-        //resource owner
-        $resource_owner_id = $code->getResourceOwnerId();
-        $resource_owner = $modelLoader->loadResourceOwner($resource_owner_id);
-        //scopes
-        $scopes = $code->getScopes();
-        //token
-        $token = $this->_token_factory->create($resource_owner, $scopes);
-        //refresh token
-        $refresh_token = $this->_refresh_token_factory->create($client, $scopes, $resource_owner);
-        //response
-        return $this->compose_response($token, $refresh_token);
+
+       	$code = $this->_refresh_token_factory->consume($code_val);
+	//resource owner
+	$resource_owner_id = $code->getResourceOwnerId();
+	$resource_owner = $modelLoader->loadResourceOwner($resource_owner_id);
+	//scopes
+       	$scopes = $code->getScopes();
+	//token
+	$token = $this->_token_factory->create($resource_owner, $scopes);
+	//refresh token
+	$refresh_token = $this->_refresh_token_factory->create($client, $scopes, $resource_owner);
+	//response
+       	return $this->compose_response($token, $refresh_token);
+
     }
 
     /**
      * Process a request with client credential grant type
      *
      * @param Oauth_Model_Request $request
-     * @return string the request to be outputted
+     * @return string the response
      */
     protected function processGrantTypeClientCredential(Oauth_Model_Request $request) {
 
         $modelLoader = $this->_helper->ModelLoader;
-        
         $client = $this->retrieveClientFromHeader($request);
         //resource owner
         $resource_owner = $modelLoader->loadResourceOwner($client->getId());
         //scopes
         $scopes = $request->getScope();
-        //token
-        $token = $this->_token_factory->create($resource_owner, $scopes);
+       	//token
+       	$token = $this->_token_factory->create($resource_owner, $scopes);
         //response
         return $this->compose_response($token, NULL);
+
     }
 
     /**
@@ -201,7 +208,7 @@ class Oauth_TokenController extends Zend_Controller_Action {
      *
      * @param Oauth_Model_Token $access_token
      * @param Oauth_Model_RefreshToken $refresh_token
-     * 
+     *
      * @return string the JSON encoded object to be returned
      */
     private function compose_response(Oauth_Model_Token $access_token, Oauth_Model_RefreshToken $refresh_token) {
@@ -220,13 +227,12 @@ class Oauth_TokenController extends Zend_Controller_Action {
             $response_token['refresh_token'] = $refresh_token->getCode();
         }
 
-
         return json_encode($response_token);
     }
 
     /**
      * This method calls the Validator to check if the request is valid or not
-     * 
+     *
      * @return boolean TRUE if the request is valid, FALSE otherwise
      */
     protected function validateRequest() {
@@ -251,4 +257,3 @@ class Oauth_TokenController extends Zend_Controller_Action {
     }
 
 }
-

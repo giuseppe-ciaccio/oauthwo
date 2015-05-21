@@ -13,6 +13,18 @@ class IndexController extends Zend_Controller_Action
         // action body
     }
 
+        /**
+         * Ensures the user is logged in with Zend_Auth, else prompt the login
+         *
+         */
+        public function preDispatch() {
+                if (!Zend_Auth::getInstance()->hasIdentity()) {
+                        $urlOptions = array(
+                                'module'=>'login',
+                                'controller'=>'index',
+                                'action'=>'index');
+                        $this->_helper->redirector->gotoRoute($urlOptions);
+                }
+        }
 
 }
-

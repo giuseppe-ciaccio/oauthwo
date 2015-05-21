@@ -9,7 +9,7 @@
  */
 
 /**
- *  Implements a REfresh Token Model Object
+ *  Implements a Refresh Token Model Object
  *
  * @author Antonio Pastorino <antonio.pastorino@gmail.com>
  */
@@ -164,7 +164,9 @@ class Oauth_Model_RefreshToken{
      * @return boolean valid or not
      */
     public function checkTimeValidity($ts){                
-        $valid_until = $this->getCreated() + REFRESH_TOKEN_VALIDITY;        
+        $config = new Zend_Config_Ini(realpath(
+		APPLICATION_PATH . '/configs/application.ini'), 'production');
+        $valid_until = $this->getCreated() + $config->refrTokenValidity;        
         return $valid_until > $ts;        
     }
     

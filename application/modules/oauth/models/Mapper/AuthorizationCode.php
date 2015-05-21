@@ -1,11 +1,11 @@
 <?php
 /**
- * 
- * AuthorizationCode.php, 
- * 
+ *
+ * AuthorizationCode.php,
+ *
  * @author Antonio Pastorino <antonio.pastorino@gmail.com>
  * @version 0.1
- * 
+ *
  */
 
 /**
@@ -18,17 +18,17 @@ class Oauth_Mapper_AuthorizationCode extends Oauth_Mapper_Abstract{
 
     /**
      * This object constructor
-     * 
+     *
      */
     public function __construct() {
         $this->table_name = 'Oauth_Model_DbTable_AuthorizationCode';
     }
 
-    
+
     /**
      * Saves an Authorization Code in the DB
      *
-     * @param Oauth_Model_AuthorizationCode $authorizationCode 
+     * @param Oauth_Model_AuthorizationCode $authorizationCode
      */
     public function save(Oauth_Model_AuthorizationCode $authorizationCode) {
         $data = array(
@@ -40,13 +40,13 @@ class Oauth_Mapper_AuthorizationCode extends Oauth_Mapper_Abstract{
 
         $this->getDbTable()->insert($data);
     }
-    
-    
+
+
     /**
      * Retrieves an authorization code from the DB by code
     *
     * @param string $code
-    * @return Oauth_Model_AuthorizationCode 
+    * @return Oauth_Model_AuthorizationCode
     */
     public function find($code) {
         $result = $this->getDbTable()->find($code);
@@ -55,19 +55,19 @@ class Oauth_Mapper_AuthorizationCode extends Oauth_Mapper_Abstract{
         }
         $row = $result->current();
         $clientMapper = new Oauth_Mapper_Client();
-        $client = $clientMapper->find($row->client_id);        
-        
+        $client = $clientMapper->find($row->client_id);
+
         $code = new Oauth_Model_AuthorizationCode();
-        
+
         $code->setCode($row->authorization_code)
                 ->setClient($client)
                 ->setResourceOwnerId($row->resource_owner_id)
                 ->setScopes($row->scopes)
                 ->setCreated($row->generation_timestamp);
-        
+
         return $code;
     }
-    
+
     /**
      * Deletes an authorization code by code
      *
@@ -75,17 +75,17 @@ class Oauth_Mapper_AuthorizationCode extends Oauth_Mapper_Abstract{
      * @return int
      */
     public function delete($code){
-        
+
         $result = $this->getDbTable()->find($code);
         if (0 == count($result)) {
             return;
         }
-        
+
         $row = $result->current();
         $row->delete();
-        
+
     }
-    
+
 
 }
 

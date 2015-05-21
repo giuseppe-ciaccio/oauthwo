@@ -35,7 +35,7 @@ class Oauth_Builder_RefreshToken{
         $refresh_token->setScopes($scopes);
         $refresh_token->setResourceOwnerId($resource_owner->getId());
 
-        //Saving to the DB - should we?
+        //Saving to the DB
         $refresh_tokenMapper= new Oauth_Mapper_RefreshToken();
         $refresh_tokenMapper->save($refresh_token);
 
@@ -82,4 +82,3 @@ class Oauth_Builder_RefreshToken{
     }
 
 }
-

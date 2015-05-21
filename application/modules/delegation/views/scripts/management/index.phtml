@@ -1,0 +1,124 @@
+<div id="welcome">
+<h4><?= $this->escape($this->message) ?></h4>
+</div>
+
+<?php if($this->loggedRole):?>
+<p>You can't manage delegations logged in as a Role.</p>
+<?php else:?>
+
+	<h3>Delegation Management</h3>
+	
+	<?php if($this->delegationList):?>
+		<h4>Delegation List</h4>
+		<table cellpadding="10" border="1" cellspacing="0">
+		<tr>
+			<th>Delegator</th>
+			<th>Delegate</th>
+			<th>Scopes</th>
+			<th>Expiration</th>
+			<th>Operations</th>
+		</tr>
+		<?php foreach($this->delegationList as $d): ?>
+			<tr>
+				<td><?=$d->getDelegator()?></td>
+				<td><?=$d->getDelegate()?></td>
+				<td><?=$d->getScopes()?></td>
+				<td><?=$d->getExpDate()?></td>
+				<td>
+					<a href="<?= $this->url( array('controller' => 'management', 'action' => 'edit') ); ?>?code=<?=$d->getCode()?>">edit</a>
+					<a href="<?= $this->url( array('controller' => 'management', 'action' => 'delete') ); ?>?code=<?=$d->getCode()?>">delete</a>
+				</td>
+			</tr>
+		<?php endforeach;?>
+		</table>
+	<?php else:?> <p>There is no delegation made by you</p>
+	<?php endif;?>
+	
+	
+	<?php if($this->receivedDelegations):?>
+		<h4>Received Delegations</h4>
+		<table cellpadding="10" border="1" cellspacing="0">
+		<tr>
+			<th>Delegator</th>
+			<th>Delegate</th>
+			<th>Scopes</th>
+			<th>Expiration date</th>
+			<th>Operations</th>
+		</tr>
+		<?php foreach($this->receivedDelegations as $d): ?>
+			<tr>
+				<td><?=$d->getDelegator()?></td>
+				<td><?=$d->getDelegate()?></td>
+				<td><?=$d->getScopes()?></td>
+				<td><?=$d->getExpDate()?></td>
+				<td>
+					<a href="<?= $this->url( array('controller' => 'management', 'action' => 'delete') ); ?>?code=<?=$d->getCode()?>">delete</a>
+				</td>
+			</tr>
+		<?php endforeach;?>
+		</table>
+	<?php else:?> <p>There is no received delegation</p>
+	<?php endif;?>
+	
+	
+	<?php if($this->pendingDelegationsSent):?>
+		<h4>Pending Delegations sent</h4>
+		<table cellpadding="10" border="1" cellspacing="0">
+		<tr>
+			<th>Delegator</th>
+			<th>Delegate</th>
+			<th>Scopes</th>
+			<th>Expiration date</th>
+			<th>Operations</th>
+		</tr>
+		<?php foreach($this->pendingDelegationsSent as $d): ?>
+			<tr>
+				<td><?=$d->getDelegator()?></td>
+				<td><?=$d->getDelegate()?></td>
+				<td><?=$d->getScopes()?></td>
+				<td><?=$d->getExpDate()?></td>
+				<td>
+				<a href="<?= $this->url( array('controller' => 'management', 'action' => 'revoke') ); ?>?code=<?=$d->getCode()?>">revoke</a>
+				</td>
+			</tr>
+		<?php endforeach;?>
+		</table>
+	<?php else:?> <p>There is no pending delegation sent</p>
+	<?php endif;?>
+	
+	
+	<?php if($this->pendingDelegationsReceived):?>
+		<h4>Pending Delegations received</h4>
+		<table cellpadding="10" border="1" cellspacing="0">
+		<tr>
+			<th>Delegator</th>
+			<th>Delegate</th>
+			<th>Scopes</th>
+			<th>Expiration date</th>
+			<th>Operations</th>
+		</tr>
+		<?php foreach($this->pendingDelegationsReceived as $d): ?>
+			<tr>
+				<td><?=$d->getDelegator()?></td>
+				<td><?=$d->getDelegate()?></td>
+				<td><?=$d->getScopes()?></td>
+				<td><?=$d->getExpDate()?></td>
+				<td>
+				<a href="<?= $this->url( array('controller' => 'management', 'action' => 'accept') ); ?>?code=<?=$d->getCode()?>">accept</a>
+				<a href="<?= $this->url( array('controller' => 'management', 'action' => 'revoke') ); ?>?code=<?=$d->getCode()?>">deny</a>
+				</td>
+			</tr>
+		<?php endforeach;?>
+		</table>
+	<?php else:?> <p>There is no pending delegation received</p>
+	<?php endif;?>
+
+	<br>
+	<h4>Make a new delegation</h4>
+	<?php if($this->form):?>
+	<div class="form">
+	    <?=$this->form?>
+	</div>
+	<?php endif; ?>
+	
+<?php endif;?>

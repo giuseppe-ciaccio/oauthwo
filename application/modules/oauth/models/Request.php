@@ -1,12 +1,12 @@
 <?php
 
 /**
- * 
- * Request.php, 
- * 
+ *
+ * Request.php,
+ *
  * @author Antonio Pastorino <antonio.pastorino@gmail.com>
  * @version 0.1
- * 
+ *
  */
 
 /**
@@ -26,7 +26,7 @@ class Oauth_Model_Request implements Oauth_Request_Interface {
     /**
      * Construct a Request injecting the Zend request
      *
-     * @param Zend_Controller_Request_Abstract $request 
+     * @param Zend_Controller_Request_Abstract $request
      */
     public function __construct(Zend_Controller_Request_Abstract $request) {
         $this->_request = $request;
@@ -44,7 +44,7 @@ class Oauth_Model_Request implements Oauth_Request_Interface {
 
     /**
      * Returns the endpoint of this request
-     * 
+     *
      */
     function getEndpoint() {
         return $this->_request->getControllerName();
@@ -52,8 +52,8 @@ class Oauth_Model_Request implements Oauth_Request_Interface {
 
     /**
      * If present in this request, returns the Authorization header/scheme
-     * 
-     * @return mixed Authorization header/scheme if present in this request, FALSE otherwise 
+     *
+     * @return mixed Authorization header/scheme if present in this request, FALSE otherwise
      */
     function getAuthorization() {
         return $this->_request->getHeader('Authorization') ?
@@ -63,8 +63,8 @@ class Oauth_Model_Request implements Oauth_Request_Interface {
 
     /**
      * If present in this request, returns the parameter: response_type
-     * 
-     * @return mixed response_type parameter if present in this request, FALSE otherwise 
+     *
+     * @return mixed response_type parameter if present in this request, FALSE otherwise
      */
     function getResponseType() {
         return $this->getParam(RESPONSE_TYPE);
@@ -72,8 +72,8 @@ class Oauth_Model_Request implements Oauth_Request_Interface {
 
     /**
      * If present in this request, returns the parameter: client_id
-     * 
-     * @return mixed client_id parameter if present in this request, FALSE otherwise 
+     *
+     * @return mixed client_id parameter if present in this request, FALSE otherwise
      */
     function getClientId() {
         return $this->getParam(CLIENT_ID);
@@ -81,8 +81,8 @@ class Oauth_Model_Request implements Oauth_Request_Interface {
 
     /**
      * If present in this request, returns the parameter: redirect_uri
-     * 
-     * @return mixed redirect_uri parameter if present in this request, FALSE otherwise 
+     *
+     * @return mixed redirect_uri parameter if present in this request, FALSE otherwise
      */
     function getRedirectUri() {
         return $this->getParam(REDIRECT_URI);
@@ -90,8 +90,8 @@ class Oauth_Model_Request implements Oauth_Request_Interface {
 
     /**
      * If present in this request, returns the parameter: scope
-     * 
-     * @return mixed scope parameter if present in this request, FALSE otherwise 
+     *
+     * @return mixed scope parameter if present in this request, FALSE otherwise
      */
     function getScope() {
         return $this->getParam(SCOPE);
@@ -99,8 +99,8 @@ class Oauth_Model_Request implements Oauth_Request_Interface {
 
     /**
      * If present in this request, returns the parameter: state
-     * 
-     * @return mixed state parameter if present in this request, FALSE otherwise 
+     *
+     * @return mixed state parameter if present in this request, FALSE otherwise
      */
     function getState() {
         return $this->getParam(STATE);
@@ -108,8 +108,8 @@ class Oauth_Model_Request implements Oauth_Request_Interface {
 
     /**
      * If present in this request, returns the parameter: code
-     * 
-     * @return mixed code parameter if present in this request, FALSE otherwise 
+     *
+     * @return mixed code parameter if present in this request, FALSE otherwise
      */
     function getCode() {
         return $this->getParam(CODE);
@@ -117,41 +117,41 @@ class Oauth_Model_Request implements Oauth_Request_Interface {
 
     /**
      * If present in this request, returns the parameter: grant_type
-     * 
-     * @return mixed grant_type parameter if present in this request, FALSE otherwise 
+     *
+     * @return mixed grant_type parameter if present in this request, FALSE otherwise
      */
     function getGrantType() {
-        return $this->getParam(GRANT_TYPE);        
+        return $this->getParam(GRANT_TYPE);
     }
 
     /**
      * If present in this request, returns the parameter: refresh_token
-     * 
-     * @return mixed refresh_token parameter if present in this request, FALSE otherwise 
+     *
+     * @return mixed refresh_token parameter if present in this request, FALSE otherwise
      */
     function getRefreshToken() {
-        return $this->getParam(REFRESH_TOKEN);        
+        return $this->getParam(REFRESH_TOKEN);
     }
 
     /**
      * If present in this request, returns the parameter: username
-     * 
-     * @return mixed username parameter if present in this request, FALSE otherwise 
+     *
+     * @return mixed username parameter if present in this request, FALSE otherwise
      */
     function getUsername() {
-        return $this->getParam(USERNAME);        
+        return $this->getParam(USERNAME);
     }
 
     /**
      * If present in this request, returns the parameter: password
-     * 
-     * @return mixed password parameter if present in this request, FALSE otherwise 
+     *
+     * @return mixed password parameter if present in this request, FALSE otherwise
      */
     function getPassword() {
-        return $this->getParam(PASSWORD);        
+        return $this->getParam(PASSWORD);
     }
 
-    
+
     public function isPost() {
         return $this->_request->isPost();
     }

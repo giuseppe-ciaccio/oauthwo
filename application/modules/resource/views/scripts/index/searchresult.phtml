@@ -1,0 +1,17 @@
+<h1>Search results</h1>
+
+<ol>
+
+<?php
+if ($this->resu == NULL)
+	echo "<h3>None found</h3>";
+else foreach($this->resu as $r) {
+	echo "<li>Resource set: " . $r['rset_name'] . "; </br>
+	Description: " . $r['rset_description'] . "; </br>
+	URI: <a href='" . $r['rset_uri'] . "'>" . $r['rset_uri'] . "</a></br>
+	Type: <a href='" . $r['rset_type'] . "'>" . $r['rset_type'] . "</a></br>
+	Relevance: " . $r['relevance'] . "</li>";
+}
+?>
+
+</ol>

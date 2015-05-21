@@ -11,23 +11,28 @@ class Login_Form_LoginForm extends Zend_Form {
             ),
             'required' => true,
             'label' => 'Your username:',
-                ));
+        ));
 
         $password = $this->addElement('password', 'password', array(
             'filters' => array('StringTrim'),
             'validators' => array(
-                'Alnum',
                 array('StringLength', false, array(6, 20)),
             ),
             'required' => true,
             'label' => 'Password:',
-                ));
+        ));
 
         $login = $this->addElement('submit', 'login', array(
             'required' => false,
             'ignore' => true,
             'label' => 'Login',
-                ));
+        ));
+
+        $login = $this->addElement('submit', 'role', array(
+            'required' => false,
+            'ignore' => true,
+            'label' => 'Login by role instead',
+        ));
 
         // We want to display a 'failed authentication' message if necessary;
         // we'll do that with the form 'description', so we need to add that
@@ -49,6 +54,5 @@ class Login_Form_LoginForm extends Zend_Form {
             $this->addElement('hidden', $k, array('value' => $v));
         }
     }
-
 
 }

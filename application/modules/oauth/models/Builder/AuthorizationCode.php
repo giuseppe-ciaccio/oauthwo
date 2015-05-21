@@ -35,7 +35,7 @@ class Oauth_Builder_AuthorizationCode{
         $authorization_code->setScopes($scopes);
         $authorization_code->setResourceOwnerId($resource_owner->getId());
 
-        //Saving to the DB - should we?
+        //Saving to the DB
         $authorizationCodeMapper = new Oauth_Mapper_AuthorizationCode();
         $authorizationCodeMapper->save($authorization_code);
 
@@ -85,4 +85,3 @@ class Oauth_Builder_AuthorizationCode{
     }
 
 }
-

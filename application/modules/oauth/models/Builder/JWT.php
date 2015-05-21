@@ -13,7 +13,8 @@
  *
  * @author Antonio Pastorino <antonio.pastorino@gmail.com>
  */
-abstract class Oauth_Builder_JWT{
+
+abstract class Oauth_Builder_JWT {
 
     /**
      * Helper function to base64 encode a string. 
@@ -43,4 +44,5 @@ abstract class Oauth_Builder_JWT{
      * 
      */
     abstract function get_token($payload);
+
 }

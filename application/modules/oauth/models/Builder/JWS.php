@@ -14,7 +14,8 @@
  *
  * @author Antonio Pastorino <antonio.pastorino@gmail.com>
  */
-class Oauth_Builder_JWS extends Oauth_Builder_JWT{
+
+class Oauth_Builder_JWS extends Oauth_Builder_JWT {
     
     /**
      * This JWS header
@@ -40,7 +41,6 @@ class Oauth_Builder_JWS extends Oauth_Builder_JWT{
         $this->set_header('typ', 'JWT');
         //Signing algo is RSA with 256bit key
         $this->set_header('alg', 'RS256');
-        
         $this->key=$private_key_location;
     }
     
@@ -50,19 +50,16 @@ class Oauth_Builder_JWS extends Oauth_Builder_JWT{
      * @param string $plaintext
      * @return string
      */
-    public function get_token($payload){        
-        //we build the secured input
+    public function get_token($payload){
         $secured_input = $this->build_secured_input($payload);
-        //we sign the secured input
-        $signature = $this->sign($secured_input);                             
-        //we build the final token
+        $signature = $this->sign($secured_input);
+        if ($signature == NULL) return NULL;
         $signed_token = sprintf("%s.%s",$secured_input,$signature);
-        //and return it       
         return $signed_token;
     }
       
     /**
-     * Signs the secured input. 
+     * Sign the secured input.
      *
      * @param string $secured_input
      * @return string
@@ -75,18 +72,15 @@ class Oauth_Builder_JWS extends Oauth_Builder_JWT{
 
         //obtain key from location
         $fp = fopen($this->key, "r");
-	// TODO: Should the key file be not accessible,
-	// the function silently returns an empty signature
-	// and the resulting token will be ill-formed and rejected by RS.
-	// Caller must do sanity checks,
-	// or this function should throw an exception and caller should catch.
+        if ($fp == NULL) return FALSE;
         $priv_key = fread($fp, 8192);
         fclose($fp);
         $pkeyid = openssl_get_privatekey($priv_key);
 
-        openssl_sign($secured_input, $signature, $pkeyid, $algo);
+        $res = openssl_sign($secured_input, $signature, $pkeyid, $algo);
 
-        openssl_free_key($pkeyid); 
+        openssl_free_key($pkeyid);
+        if (!$res) return FALSE;
         return $this->get_base64_encode($signature);
     }
     
@@ -108,8 +102,5 @@ class Oauth_Builder_JWS extends Oauth_Builder_JWT{
         //concat with a dot
         return sprintf("%s.%s",$enc_header,$enc_payload);
     }
-    
-    
-    
-    
+
 }

@@ -58,7 +58,6 @@ class Oauth_Model_AuthorizationCode {
         $this->_code = (string) $code;
         return $this;
     }
-
     
     /**
      * Returns this code's code
@@ -68,8 +67,6 @@ class Oauth_Model_AuthorizationCode {
     public function getCode() {
         return $this->_code;
     }
-    
-    
 
     /**
      * Sets the issued at client
@@ -159,7 +156,6 @@ class Oauth_Model_AuthorizationCode {
         return $this;
     }
     
-    
     /**
      * Check if this code is stil valid
      *
@@ -167,7 +163,9 @@ class Oauth_Model_AuthorizationCode {
      * @return boolean valid or not
      */
     public function checkTimeValidity($ts){                
-        $valid_until = $this->getCreated() + AUTHORIZATION_CODE_VALIDITY;        
+        $config = new Zend_Config_Ini(realpath(
+		APPLICATION_PATH . '/configs/application.ini'), 'production');
+        $valid_until = $this->getCreated() + $config->authCodeValidity;
         return $valid_until > $ts;        
     }
     
@@ -180,8 +178,5 @@ class Oauth_Model_AuthorizationCode {
     public function checkClient(Oauth_Model_Client $client){
         return $this->getClientId() === $client->getId();
     }
-    
-    
-    
 
 }

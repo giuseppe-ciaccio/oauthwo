@@ -2,88 +2,87 @@
 
 class Login_IndexController extends Zend_Controller_Action {
 
-    protected $redirect_after_login = NULL;
-
     public function init() {
-        //$this->form_action = '/login/process'; BAD
-        $this->form_action = $this->view->url(array('module' => 'login',
-							'controller' => 'index',
-							'action'     => 'process'), 'default'); 
-        
-        if ($this->getRequest()->getParam('destination')) {
-            $this->redirect_after_login = $this->getRequest()->getParam('destination');
-        }
+
     }
+
 
     protected function getAuthAdapter(array $params) {
         $dbAdapter = Zend_Db_Table::getDefaultAdapter();
-        $authAdapter = new Zend_Auth_Adapter_DbTable($dbAdapter);        
+        $authAdapter = new Zend_Auth_Adapter_DbTable($dbAdapter);
 
         $authAdapter->setTableName('user')
-
             ->setIdentityColumn('user_id')
-
             ->setCredentialColumn('user_password')
-
             ->setCredentialTreatment('MD5(?)');
 
-
-        $authAdapter->setIdentity($params['username']); 
-        
+        $authAdapter->setIdentity($params['username']);
         $authAdapter->setCredential($params['password']);
-                   
 
-        return $authAdapter;     
-        
+        return $authAdapter;
     }
+
 
     protected function afterSuccessfulLogin() {
         $session = new Zend_Session_Namespace('lastRequest');
         if (isset($session->lastRequestUri)) {
             $redirect_uri=$session->lastRequestUri;
             unset($session->lastRequestUri);
-            
-            //echo $redirect_uri;
-            //echo $this->view->serverUrl($redirect_uri);
             $this->_helper->redirector->gotoUrl($this->view->serverUrl($redirect_uri));
-            //$this->_redirect($this->getRequest()->getHttpHost().$redirect_uri);
             return;
         }
-
         $this->_helper->redirector('index', 'index', 'default');
     }
 
-    protected function loginAfterLogin() {
-        $this->_helper->redirector('index', 'index', 'default');
-    }
-    
-    
-    
+
     public function indexAction() {
         $form = $this->getForm();
-        $form->setDescription('Sign in the authorization service');
+        $param = $this->_getParam("wrong");
+        if ($param == NULL)
+            $form->setDescription('Sign in the authorization service');
+        else {
+            if ($param == 'inventr')
+                $form->setDescription('Invalid entries. Try again.');
+            else if ($param == 'invcred')
+                $form->setDescription('Invalid credentials. Try again.');
+            else
+                $form->setDescription('Unknown error. Try again.');
+        }
         $this->view->form = $form;
     }
 
+
     public function logoutAction() {
         Zend_Auth::getInstance()->clearIdentity();
+
+        //reset role (delegation module)
+        $d = new Zend_Session_Namespace('delegation');
+        unset($d->role);
+
         $this->_helper->redirector('index'); // back to login page
     }
 
+
     public function processAction() {
         $request = $this->getRequest();
-        
+
         // Check if we have a POST request
-        if (!$request->isPost()) {
+        if (!$request->isPost())
             return $this->_helper->redirector('index');
-        }
-        // Get our form and validate it
+
+        $post = $request->getPost();
         $form = $this->getForm();
-        if (!$form->isValid($request->getPost())) {
+
+        // Login by role?
+        if ($post['role'])
+	    $this->_helper->redirector('index','role','delegation');
+
+        // validate the form
+        if (!$form->isValid($post)) {
             // Invalid entries
-            $this->view->form = $form;
-            return $this->render('index'); // re-render the login form
-// TODO il render() non sortisce effetti, il form non appare.
+//	    $this->_helper->redirector->gotoUrlAndExit('login?wrong=inventr');
+	    $this->_helper->redirector(
+                    'index','index','login',array('wrong'=>'inventr'));
         }
 
         // Get our authentication adapter and check credentials
@@ -92,29 +91,24 @@ class Login_IndexController extends Zend_Controller_Action {
         $result = $auth->authenticate($adapter);
         if (!$result->isValid()) {
             // Invalid credentials
-            $form->setDescription('Invalid credentials provided');
-            $this->view->form = $form;
-            return $this->render('index'); // re-render the login form
-// TODO il render() non sortisce effetti, il form non appare.
-// Con quella sotto invece si', ma ovviamente senza la frase
-// "Invalid credential"
-//            return $this->_helper->redirector('index');
+	    $this->_helper->redirector(
+                    'index','index','login',array('wrong'=>'invcred'));
         }
 
         // We're authenticated!
         $this->afterSuccessfulLogin();
     }
 
+
     public function preDispatch() {
 
         if (Zend_Auth::getInstance()->hasIdentity()) {
             // If the user is logged in, we don't want to show the login form;
             // however, the logout action should still be available
-            if ('logout' != $this->getRequest()->getActionName()) {
-                $this->loginAfterLogin();
-            }
+            if ('logout' != $this->getRequest()->getActionName())
+	        $this->_helper->redirector('index', 'index', 'default');
         } else {
-            // If they aren't, they can't logout, so that action should 
+            // If they aren't, they can't logout, so that action should
             // redirect to the login form
             if ('logout' == $this->getRequest()->getActionName()) {
                 $this->_helper->redirector('index');
@@ -122,16 +116,18 @@ class Login_IndexController extends Zend_Controller_Action {
         }
     }
 
+
     protected function getForm() {
+        $formAction = $this->view->url(array(
+			'module' => 'login',
+			'controller' => 'index',
+			'action'     => 'process'), 'default');
         $form = new Login_Form_LoginForm(array(
-                    'action' => $this->form_action,
+                    'action' => $formAction,
                     'method' => 'post',
                 ));
-        
         $form->injectRequestValues($this->getRequest()->getParams());
-        
         return $form;
     }
 
 }
-

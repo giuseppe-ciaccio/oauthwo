@@ -1,55 +1,55 @@
 <?php
 
 /**
- * 
- * Bootstrap.php, 
- * 
+ *
+ * Bootstrap.php,
+ *
  * @author Antonio Pastorino <antonio.pastorino@gmail.com>
  * @version 0.1
- * 
+ *
  */
 /**
- * Defines the response type parameter name 
+ * Defines the response type parameter name
  */
 define('RESPONSE_TYPE', 'response_type');
 
 /**
- * Defines the response type parameter value code 
+ * Defines the response type parameter value code
  */
 define('RESPONSE_TYPE_CODE', 'code');
 
 /**
- * Defines the response type parameter value token 
+ * Defines the response type parameter value token
  */
 define('RESPONSE_TYPE_TOKEN', 'token');
 
 /**
- * Defines the client id parameter name 
+ * Defines the client id parameter name
  */
 define('CLIENT_ID', 'client_id');
 
 /**
- * Defines the redirect uri parameter name 
+ * Defines the redirect uri parameter name
  */
 define('REDIRECT_URI', 'redirect_uri');
 
 /**
- * Defines the scope parameter name 
+ * Defines the scope parameter name
  */
 define('SCOPE', 'scope');
 
 /**
- * Defines the state parameter name 
+ * Defines the state parameter name
  */
 define('STATE', 'state');
 
 /**
- * Defines the code parameter name 
+ * Defines the code parameter name
  */
 define('CODE', 'code');
 
 /**
- * Defines the grant type parameter name 
+ * Defines the grant type parameter name
  */
 define('GRANT_TYPE', 'grant_type');
 
@@ -74,17 +74,17 @@ define('GRANT_TYPE_CLIENT_CREDENTIAL', 'client_credentials');
 define('GRANT_TYPE_REFRESH_TOKEN', 'refresh_token');
 
 /**
- * Defines the refresh token parameter name 
+ * Defines the refresh token parameter name
  */
 define('REFRESH_TOKEN', 'refresh_token');
 
 /**
- * Defines the username parameter name 
+ * Defines the username parameter name
  */
 define('USERNAME', 'username');
 
 /**
- * Defines the password parameter name 
+ * Defines the password parameter name
  */
 define('PASSWORD', 'password');
 
@@ -104,29 +104,17 @@ define('CLIENT_TYPE_USER_AGENT', 'user-agent');
 define('CLIENT_TYPE_NATIVE', 'native');
 
 
-
-
-//TODO put these in some config file
-//TODO the private key should be stored elsewhere, not into the app
-define('PRIVATE_SIGN_KEY_LOCATION', APPLICATION_PATH.'/../keys/key.pem');
-
-define('ACCESS_TOKEN_VALIDITY', 600000); //in seconds
-
-define('AUTHORIZATION_CODE_VALIDITY', 60000); //in seconds
-
-define('REFRESH_TOKEN_VALIDITY', 6000000);
-
 /**
  * Realizes the module bootstrap extending Zend_Application_Module_Boostrap
- * 
- * @author Antonio Pastorino <antonio.pastorino@gmail.com> 
+ *
+ * @author Antonio Pastorino <antonio.pastorino@gmail.com>
  */
 class Oauth_Bootstrap extends Zend_Application_Module_Bootstrap {
 
     /**
      * Modify the standard routing to enable a fixed URL prefix indicating
-     * the OAuth framework version(V2) and separated authorization/token 
-     * endpoints 
+     * the OAuth framework version(V2) and separated authorization/token
+     * endpoints
      */
     public function _initOauthRouting() {
         $ctrl = Zend_Controller_Front::getInstance();
@@ -143,9 +131,9 @@ class Oauth_Bootstrap extends Zend_Application_Module_Bootstrap {
     }
 
     /**
-     * Adds a path to the helper broker in order to serve our module specific 
+     * Adds a path to the helper broker in order to serve our module specific
      * helpers
-     * 
+     *
      */
     protected function _initHelperPath() {
         Zend_Controller_Action_HelperBroker::addPath(

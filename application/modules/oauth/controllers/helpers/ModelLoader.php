@@ -1,13 +1,15 @@
 <?php
 
 /**
- * 
- * ModelLoader.php, 
- * 
+ *
+ * ModelLoader.php,
+ *
  * @author Antonio Pastorino <antonio.pastorino@gmail.com>
  * @version 0.1
- * 
+ *
  */
+
+
 
 /**
  *  Extends an abstract helper and is used to load models objects
@@ -52,7 +54,7 @@ class Oauth_Controller_Action_Helper_ModelLoader extends Zend_Controller_Action_
     }
 
     /**
-     * Loads a resource owner 
+     * Loads a resource owner
      *
      * @param string $resource_owner_id
      * @return Oauth_Model_ResourceOwner

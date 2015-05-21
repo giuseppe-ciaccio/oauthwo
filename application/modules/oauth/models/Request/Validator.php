@@ -1,10 +1,5 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of Validator
  *
@@ -42,12 +37,12 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
         self::WRONG_INSTANCE => "internal_error:validating obj does not implements Oauth_Request_Interface",
         self::WRONG_ENDPOINT => "invalid_request:Endpoint not valid",
         self::WRONG_RESPONSE_TYPE => "invalid_request:Response type not supported",
-        self::WRONG_SCOPE => "invalid_request:Specified scope does not exists",
+        self::WRONG_SCOPE => "invalid_request:Specified scope does not exist",
         self::MISSING_RESPONSE_TYPE => "invalid_request:Response type not specified",
         self::MISSING_CLIENT => "invalid_request:client id not specified",
         self::MISSING_REDIRECT_URI => "invalid_request:redirect uri not specified",
         self::MISSING_SCOPE => "invalid_request:scope not specified",
-        self::WRONG_CLIENT_ID => "invalid_request:Client does not exists",
+        self::WRONG_CLIENT_ID => "invalid_request:Client does not exist",
         self::WRONG_CLIENT_TYPE => "unauthorized_client:Client is not authorized to do that!",
         self::WRONG_REDIRECT_URI => "invalid_request:Redirect uri is wrong!",
         self::NOT_POST_REQUEST => "invalid_request:the request should be a post request",
@@ -67,15 +62,17 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
     );
 
     public function isValid($value) {
+
+//peppe qui
         $this->_setValue($value);
 
-        //first of all, let's check the instance of the object to be validated
+        //check the instance of the object to be validated
         if (!$value instanceof Oauth_Request_Interface) {
             $this->_error(self::WRONG_INSTANCE);
             return FALSE;
         }
 
-        //now, let's see which endpoint we should check and call the correct method
+        //see which endpoint we should check and call the correct method
         switch ($value->getEndpoint()) {
             case 'authorize':
                 return $this->isValidAuthorizeEndpointRequest($value);
@@ -85,17 +82,16 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
                 $this->_error(self::WRONG_ENDPOINT);
                 return FALSE;
         }
+
     }
 
     private function isValidAuthorizeEndpointRequest(Oauth_Request_Interface $request) {
 
-        
-        
         $responseType = $request->getResponseType();
 
         //////////////////////////////////////
         ///////DATABASE AGNOSTIC CHECKS///////
-        //////////////////////////////////////        
+        //////////////////////////////////////
 
         /////GENERIC CHECKS
 
@@ -120,12 +116,12 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
         }
 
         /////SERVER SPECIFIC CHECKS
-        
+
         if (!$redirect_uri = $request->getRedirectUri()) {
             $this->_error(self::MISSING_REDIRECT_URI);
             return FALSE;
         }
-        
+
         //////////////////////////////////////
         ///////DATABASE AWARE CHECKS//////////
         //////////////////////////////////////
@@ -133,9 +129,9 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
         /////SERVER SPECIFIC CHECKS
 
         //Check scopes
-        if (!$this->validateScopes($request)) {
-            return FALSE;
-        }
+	if (!$this->validateScopes($request)) {
+		return FALSE;
+	}
 
         //Check client
 
@@ -157,6 +153,7 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
         }
 
         return TRUE;
+
     }
 
     private function isValidTokenEndpointRequest(Oauth_Request_Interface $request) {
@@ -166,40 +163,17 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
             return FALSE;
         }
 
-
         if (!$grant_type = $request->getGrantType()) {
             $this->_error(self::MISSING_GRANT_TYPE);
             return FALSE;
         }
+
         switch ($grant_type) {
             case GRANT_TYPE_AUTHORIZATION_CODE:
-                if (!$request->getRedirectUri()) {
-                    $this->_error(self::MISSING_REDIRECT_URI);
-                    return FALSE;
-                }
-                if (!$request->getCode()) {
-                    $this->_error(self::MISSING_CODE);
-                    return FALSE;
-                }
-                
                 return $this->validateAuthorizationCode($request);
             case GRANT_TYPE_PASSWORD:
-                if (!$request->getUsername()) {
-                    $this->_error(self::MISSING_USERNAME);
-                    return FALSE;
-                }
-                if (!$request->getPassword()) {
-                    $this->_error(self::MISSING_PASSWORD);
-                    return FALSE;
-                }
-                
                 return $this->validatePassword($request);
             case GRANT_TYPE_REFRESH_TOKEN:
-                if (!$request->getRefreshToken()) {
-                    $this->_error(self::MISSING_REFRESH_TOKEN);
-                    return FALSE;
-                }
-                
                 return $this->validateRefreshToken($request);
             case GRANT_TYPE_CLIENT_CREDENTIAL:
                 return $this->validateClientCredential($request);
@@ -209,25 +183,11 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
                 break;
         }
         return TRUE;
+
     }
 
-    private function validateClientCredential(Oauth_Request_Interface $request) {
+    private function validClient(Oauth_Request_Interface $request) {
 
-        //check client
-        if (!$this->validateAuthorize($request)) {
-            return FALSE;
-        }
-
-        //checks scopes
-        if (!$this->validateScopes($request)) {
-            return FALSE;
-        }
-        
-        return TRUE;
-    }
-
-    private function validateAuthorize(Oauth_Request_Interface $request) {
-        //creating the mappers - should be removed
         $clientMapper = new Oauth_Mapper_Client();
 
         $authorization = $request->getAuthorization();
@@ -247,13 +207,11 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
             return FALSE;
         }
 
-
-        //validate client        
+        //validate client
         if (!($client->getSecret() === $client_secret)) {
             $this->_error(self::WRONG_CLIENT_CREDENTIAL);
             return FALSE;
         }
-
 
         $grant_type = $request->getGrantType();
 
@@ -263,39 +221,49 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
         }
 
         return $client;
+
     }
 
     private function validateScopes(Oauth_Request_Interface $request) {
 
         $scopeMapper = new Oauth_Mapper_Scope();
 
-        
         if (!$scope = $request->getScope()) {
             $this->_error(self::MISSING_SCOPE);
             return FALSE;
         }
 
-        $scopes = explode(" ", trim($scope));       
-        
+        $scopes = explode(" ", trim($scope));
+
         foreach ($scopes as $s) {
-            if (!$scopeMapper->find($s)) {                
-                $this->_error(self::WRONG_SCOPE);
-                return FALSE;
-            }
+                if (!$scopeMapper->find($s)) {
+                        $this->_error(self::WRONG_SCOPE);
+                        return FALSE;
+                }
         }
-        
+
         return TRUE;
+
+    }
+
+
+    private function validateClientCredential(Oauth_Request_Interface $request) {
+
+        //check client
+        if (!$this->validClient($request)) {
+            return FALSE;
+        }
+
+	//checks scopes
+	if (!$this->validateScopes($request)) {
+		return FALSE;
+	}
+
+        return TRUE;
+
     }
 
     private function validatePassword(Oauth_Request_Interface $request) {
-
-        if (!$this->validateAuthorize($request)) {
-            return FALSE;
-        }
-
-        if (!$this->validateScopes($request)) {
-            return FALSE;
-        }
 
         if (!$username = $request->getUsername()) {
             $this->_error(self::MISSING_USERNAME);
@@ -306,6 +274,14 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
             $this->_error(self::MISSING_PASSWORD);
             return FALSE;
         }
+
+        if (!$this->validClient($request)) {
+            return FALSE;
+        }
+
+	if (!$this->validateScopes($request)) {
+		return FALSE;
+	}
 
         $dbAdapter = Zend_Db_Table::getDefaultAdapter();
         $authAdapter = new Zend_Auth_Adapter_DbTable($dbAdapter);
@@ -322,12 +298,16 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
             $this->_error(self::WRONG_USER_PW);
             return FALSE;
         }
-        
+
         return TRUE;
+
     }
 
     private function validateAuthorizationCode(Oauth_Request_Interface $request) {
 
+	/*
+	 * rfc 6749 Section 4.1.3
+	 */
         if (!$redirect_uri = $request->getRedirectUri()) {
             $this->_error(self::MISSING_REDIRECT_URI);
             return FALSE;
@@ -338,10 +318,13 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
             return FALSE;
         }
 
-        if (!$req_client = $this->validateAuthorize($request)) {
+        if (!$req_client = $this->validClient($request)) {
             return FALSE;
         }
 
+	/*
+	 * rfc 6749 Section 4.1.3
+	 */
         if (!$req_client->checkRedirectUri($redirect_uri)) {
             $this->_error(self::WRONG_REDIRECT_URI);
             return FALSE;
@@ -349,9 +332,9 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
 
         $code_builder = new Oauth_Builder_AuthorizationCode();
 
-
         if ((!$authorization_code = $code_builder->retrieve($code)) ||
                 (!$authorization_code->checkClient($req_client))) {
+
             $this->_error(self::WRONG_AUTHORIZATION_CODE);
             return FALSE;
         }
@@ -360,8 +343,9 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
             $this->_error(self::AUTHORIZATION_CODE_EXPIRED);
             return FALSE;
         }
-        
+
         return TRUE;
+
     }
 
     private function validateRefreshToken(Oauth_Request_Interface $request) {
@@ -371,7 +355,7 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
             return FALSE;
         }
 
-        if (!$req_client = $this->validateAuthorize($request)) {
+        if (!$req_client = $this->validClient($request)) {
             return FALSE;
         }
 
@@ -387,8 +371,9 @@ class Oauth_Request_Validator extends Zend_Validate_Abstract {
             $this->_error(self::REFRESH_TOKEN_EXPIRED);
             return FALSE;
         }
-        
+
         return TRUE;
+
     }
 
 }
